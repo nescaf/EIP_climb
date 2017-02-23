@@ -1,45 +1,51 @@
+var signup = require('./modules/auth/signup.js');
+
 // app/routes.js
 module.exports = function(app, passport) {
 
 	app.get('/', function(req, res) {
-		res.render('index.ejs'); // load the index.ejs file
-	});
-
-	// LOGIN
-	app.get('/login', function(req, res) {
-
-		// render the page and pass in any flash data if it exists
-		res.render('login.ejs', { messages: req.session.messages });
-		delete req.session.messages;
+		res.render('index.ejs', { data: req.session.data });
+		delete req.session.data;
 	});
 
 	// process the login form
 	app.post('/login', function(req, res) {
-		passport.authenticate('local-login', function(error, user, infos) {
+		passport.authenticate('local-login', function(error, user, data) {
     	if (error || !user) {
-				req.session.messages = infos;
-				return res.redirect('/login');
+				req.session.data = data;
+				return res.redirect('/');
 			} else {
-				req.login(user.profile, function(err) {
+				req.login(user, function(err) {
 					if (err)
-						return next(err);
+						throw err;
 					return res.redirect('/profile');
 				});
 			}
   	})(req, res);
 	});
 
-	// SIGNUP
-	app.get('/signup', function(req, res) {
-
-		// render the page and pass in any data if it exists
-		res.render('signup.ejs', { messages: req.session.messages });
-		delete req.session.messages;
-	});
-
 	// process the signup form
 	app.post('/signup', function(req, res) {
 
+		var userInfos = {
+			username: req.param('username') || '',
+			email: req.param('email') || '',
+			password: req.param('password'),
+			confirmPassword: req.param('confirmPassword')
+		};
+
+		signup(userInfos, function(error, user, data) {
+			if (error || !user) {
+				req.session.data = data;
+				return res.redirect('/#toregister');
+			} else {
+				req.login(user, function(err) {
+					if (err)
+						throw err;
+					return res.redirect('/profile');
+				});
+			}
+		});
 
 	});
 

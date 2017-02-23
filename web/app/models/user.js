@@ -18,6 +18,7 @@ var userSchema = mongoose.Schema({
     },
     profile : {
       username : { type: String, required: true, unique: true },
+      verified: { type: Boolean }
     },
     createdAt: Date,
     updatedAt: Date

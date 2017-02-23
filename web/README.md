@@ -1,18 +1,11 @@
-# Complete Guide to Node Authentication
+# Node server
 
-Code for the entire scotch.io tutorial series: Complete Guide to Node Authentication
+Install Node, Mongodb and npm
 
-We will be using Passport to authenticate users locally, with Facebook, Twitter, and Google.
+Before running the server, execute 'npm install' in the web directory
 
-## Instructions
+Create a 'data' directory inside web/ and execute 'mongod --dbpath ~/../web/data' before running the server
 
-If you would like to download the code and try it for yourself:
+To launch the server execute 'node server.js'
 
-1. Clone the repo: `git clone git@github.com:scotch-io/node-authentication-guide`
-2. Install packages: `npm install`
-3. Change out the database configuration in config/database.js
-4. Launch: `node server.js`
-5. Visit in your browser at: `http://localhost:8080`
-
-
-
+To test you can open a browser and go to 'localhost:8080/'

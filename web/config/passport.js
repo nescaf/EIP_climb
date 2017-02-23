@@ -10,7 +10,7 @@ var User = require('../app/models/user.js');
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
-      done(null, user.id);
+      done(null, user._id);
     });
 
     passport.deserializeUser(function(id, done) {
@@ -29,11 +29,13 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        User.findOne( {'local.email' : email }, function(err, user) {
+        User.findOne( { $or: [ {'local.email' : email }, {'profile.username' : email } ] }, function(err, user) {
             // if there are any errors, return the error before anything else
-            var infos = {
-              username : '',
-              password : ''
+            var messages = {
+              errors: {
+                username : '',
+                password : ''
+              }
             };
 
             if (err)
@@ -41,14 +43,14 @@ module.exports = function(passport) {
 
             // if no user is found, return the message
             if (!user) {
-              infos.username = 'This account does not exist.';
-              return done(null, false, infos);
+              messages.errors.username = 'This account does not exist.';
+              return done(null, false, messages);
             }
 
             // if the user is found but the password is wrong
             if (!user.validPassword(password)) {
-              infos.password = 'Oops! Wrong password.';
-              return done(null, false, infos);
+              messages.errors.password = 'Oops! Wrong password.';
+              return done(null, false, messages);
             }
 
             // all is well, return successful user
